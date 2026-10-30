@@ -29,9 +29,11 @@ pareado e conectado, captura de tela legível pelo agente e input
 | 04 Recuperação | `docs/04-recovery.md` | O que quebra, sintoma, como restaurar |
 | 05 Sistema modular | `docs/05-modular-system.md` | Como plugar as tarefas do laboratório |
 | 06 Conexão estável | `docs/06-conexao-estavel.md` | Caminho estável via proxy, o que falhou e o que prova conexão |
-| 07 Bot de recuperação | `docs/07-bot-recuperacao.md` | Bot observador pós-queda, rascunho, não instalado |
+| 07 Bot de recuperação | `docs/07-bot-recuperacao.md` | Bot instalado 2026-10-30: MacroDroid + mDNS + watchdog |
 | Navegação | `skills/s10-navegacao/SKILL.md` | Loop observar-agir-verificar-registrar e escada de destravamento |
-| Watchdog ADB | `scripts/ensure-adb.sh` | Rascunho de watchdog do ADB, não instalado |
+| Watchdog ADB | `scripts/ensure-adb.sh` | Watchdog do ADB instalado no celular, loop 180 s |
+| Descoberta mDNS | `scripts/adb-discover.py` | Descobre a porta via mDNS, atualiza endpoint e status |
+| Boot ADB | `scripts/boot-adb.sh` | Termux:Boot, inicia o watchdog ADB sem tocar boot-sshd |
 
 ## Início rápido para o agente sucessor
 
@@ -63,6 +65,9 @@ pareado e conectado, captura de tela legível pelo agente e input
 - `scripts/termux/boot-sshd.sh` — script de boot do Termux:Boot.
 - `scripts/termux/ensure-sshd.sh` — watchdog do sshd (60 s).
 - `scripts/termux/bashrc` — auto-start ao abrir o Termux.
+- `scripts/adb-discover.py` — descoberta mDNS da porta ADB, instalado no celular em `~/adb-discover.py`.
+- `scripts/ensure-adb.sh` — watchdog ADB, instalado no celular em `~/ensure-adb.sh`.
+- `scripts/boot-adb.sh` — boot ADB, instalado no celular em `~/.termux/boot/boot-adb.sh`.
 
 ## Atualização 2026-10-29 — instância Manu
 
@@ -161,3 +166,31 @@ Verificado em 2026-10-30, sem toques na tela durante a checagem:
   SSH e reconexão só para um endpoint confirmado manualmente —
   sem varredura de portas, sem acordar a tela só pelo Termux e
   sem credenciais ou portas por mensagem pública.
+
+## Atualização 2026-10-30 — recuperação instalada
+
+Verificado em 2026-10-30, com o ADB online no endpoint
+100.87.79.94:41735 (porta efêmera, não fixar):
+
+- MacroDroid, macro `LigarDepuracaoWifi`, ligada, com
+  gatilhos Intervalo regular 00:15:00 e Dispositivo
+  inicializado, e ação Configuração do Sistema [Global]
+  adb_wifi_enabled = 1. A macro já executou sozinha
+  pelo intervalo ("Executada Há 6 minutos" e depois
+  "Há 8 minutos" na lista do MacroDroid).
+- Descoberta da porta via mDNS provada: Python 3.14.8 e
+  zeroconf 0.151.5 no Termux, script `adb-discover.py`
+  achando porta 41735 via `_adb-tls-connect._tcp`,
+  igual ao endpoint via Tailscale, com Wi-Fi 192.168.0.8.
+- Watchdog `ensure-adb.sh` rodando no celular, loop
+  180 s, atualizando `~/adb-endpoint.txt` e
+  `~/adb-status.txt`, com boot em `boot-adb.sh` via
+  Termux:Boot, sem alterar `boot-sshd.sh`.
+- Entrega do endereço novo: o watchdog escreve o
+  endpoint em arquivo lido via SSH, que funciona mesmo
+  com o ADB caído. Reserva: o app da Muse.AI está no
+  S10, logado com a mesma conta desta conversa, e pode
+  passar o endpoint manualmente se a automação falhar.
+- Ainda não testado: queda real da depuração com o
+  sistema no ar, reboot real e mudança de rede. Ver
+  `docs/07-bot-recuperacao.md`, seção final.
