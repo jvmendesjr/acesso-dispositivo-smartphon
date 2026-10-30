@@ -1,10 +1,12 @@
 # Acesso ao dispositivo smartphone — S10 Lite
 
-Repositório de fundação de acesso, não do laboratório. Objetivo: ajudar
-qualquer agente a se conectar ao S10 Lite, com acesso persistente em
-condições normais (celular ligado, com rede/internet, carregado e
-conectado). As tarefas do laboratório em si vão para um repositório
-próprio, separado, que usará este aqui como base.
+Repositório único de manutenção, acesso, bot e ADB do S10 Lite.
+Objetivo: ajudar qualquer agente a se conectar ao S10 Lite, com
+acesso persistente em condições normais (celular ligado, com
+rede/internet, carregado e conectado). As tarefas de vendas em si
+vão para um repositório próprio, separado, que usará este aqui
+como base — mas nada de manutenção, acesso, bot ou ADB vive
+fora daqui.
 
 **Status verificado em 2026-10-29:** SSH no Termux funcionando, watchdog
 funcionando, Termux:Boot instalado, Tailscale conectada, ADB sem fio
@@ -26,6 +28,10 @@ pareado e conectado, captura de tela legível pelo agente e input
 | 03 ADB e navegação | `docs/03-adb-navigation.md` | Pareamento, conexão, screencap, input |
 | 04 Recuperação | `docs/04-recovery.md` | O que quebra, sintoma, como restaurar |
 | 05 Sistema modular | `docs/05-modular-system.md` | Como plugar as tarefas do laboratório |
+| 06 Conexão estável | `docs/06-conexao-estavel.md` | Caminho estável via proxy, o que falhou e o que prova conexão |
+| 07 Bot de recuperação | `docs/07-bot-recuperacao.md` | Bot observador pós-queda, rascunho, não instalado |
+| Navegação | `skills/s10-navegacao/SKILL.md` | Loop observar-agir-verificar-registrar e escada de destravamento |
+| Watchdog ADB | `scripts/ensure-adb.sh` | Rascunho de watchdog do ADB, não instalado |
 
 ## Início rápido para o agente sucessor
 
@@ -121,3 +127,37 @@ uma segunda instância de acesso, verificada em paralelo, em 2026-10-29.
   ADB são toques reais no sistema. Quem estiver olhando para o
   celular vê a Play Store abrir, o botão Instalar ser tocado e
   a página mudar para Abrir/Desinstalar, por exemplo.
+
+## Atualização 2026-10-30 — rascunho pendente de aprovação para push
+
+Verificado em 2026-10-30, sem toques na tela durante a checagem:
+
+- SSH via Tailscale sobreviveu a cerca de 7 h parado e ao retorno
+  de uma queda de energia e internet, sem intervenção manual:
+  o watchdog do sshd estava rodando e a sessão respondeu.
+- ADB não sobreviveu ao mesmo período: `adb devices` ficou vazio
+  e continuou vazio após reiniciar o servidor ADB via SSH.
+  A porta antiga da depuração sem fio passou a recusar conexão,
+  e o Termux não consegue descobrir a porta nova: acesso a
+  configurações e dumps do sistema é negado por falta de
+  permissão, e esta versão do ADB não suporta descoberta por mDNS.
+- Auditoria de persistência: o que está de fato configurado no
+  celular é só o sshd — script de boot do Termux:Boot, auto-start
+  e watchdog a cada 60 s, todos para o sshd. Não há watchdog de
+  ADB, nem watchdog de Tailscale no Termux, nem cron, e a
+  configuração do Termux está no padrão, sem apps externos
+  autorizados.
+- O S10 não tem chip SIM: usa só Wi-Fi. Por isso um gatilho por
+  SMS não é viável; qualquer gatilho por mensagem precisa ser
+  por internet/Wi-Fi, observando e aguardando o retorno da rede.
+- Conclusão de viabilidade: navegação por ADB está provada para
+  pesquisa, monitoramento, triagem e preparo de rascunho, em
+  leitura. Publicar e responder ainda não estão provados e
+  dependem de testes de rascunho com aprovação.
+- Rascunho de bot de recuperação (não instalado no celular):
+  ideia consolidada neste repositório único, em
+  `docs/07-bot-recuperacao.md` e `scripts/ensure-adb.sh`, com loop de
+  vigilância parecido com o do sshd, arquivo de status lido via
+  SSH e reconexão só para um endpoint confirmado manualmente —
+  sem varredura de portas, sem acordar a tela só pelo Termux e
+  sem credenciais ou portas por mensagem pública.
