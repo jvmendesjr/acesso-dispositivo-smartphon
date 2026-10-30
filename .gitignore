@@ -1,0 +1,10 @@
+# Nunca commitar segredos
+*.key
+*.pem
+id_ed25519
+id_rsa
+*private*
+*.png
+*.jpg
+window_dump.xml
+adb-screenshot*.png

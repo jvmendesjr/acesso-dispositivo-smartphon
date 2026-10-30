@@ -1,0 +1,11 @@
+# Auto-start sshd + watchdog whenever Termux is opened interactively.
+# Guarded so opening a new session does not spawn duplicates.
+if [ -z "$SSH_CONNECTION" ]; then
+  termux-wake-lock 2>/dev/null
+  if ! pgrep -x sshd >/dev/null 2>&1; then
+    sshd 2>/dev/null
+  fi
+  if ! pgrep -f ensure-sshd.sh >/dev/null 2>&1; then
+    nohup sh "$HOME/ensure-sshd.sh" >/dev/null 2>&1 &
+  fi
+fi
