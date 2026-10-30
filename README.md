@@ -199,3 +199,26 @@ só em `~/adb-endpoint.txt` no celular):
 - Ainda não testado: queda real da depuração com o
   sistema no ar, reboot real e mudança de rede. Ver
   `docs/07-bot-recuperacao.md`, seção final.
+
+## Atualização 2026-10-30 noite — rede nova
+
+- O celular voltou de um período fora de área numa
+  rede Wi-Fi nova. SSH via Tailscale voltou, o IP do
+  Tailscale não mudou, o IP do Wi-Fi mudou, e o ADB
+  ficou fora por horas, com o watchdog só em
+  NOT-FOUND.
+- Causa: o Android pede autorização por rede para a
+  depuração por Wi-Fi numa rede nova, e enquanto o
+  diálogo não é respondido o serviço não aparece.
+  O dono marcou "sempre permitir" desde a primeira
+  vez, e o diálogo mesmo assim repetiu no ciclo
+  seguinte — motivo interno ainda não estabelecido.
+- Recuperação: após a permissão mais recente, o
+  watchdog redescobriu a porta e o ADB reconectou
+  como `device`. Estabilidade nesta rede nova ainda
+  não está provada; observar os próximos ciclos.
+- Regra: rede nova = verificar o diálogo de
+  autorização na tela antes de concluir falha do
+  bot. Nome de rede, endereço de rede e endpoint
+  vivo nunca vão para este repositório. Ver
+  `docs/07-bot-recuperacao.md`, seção final.

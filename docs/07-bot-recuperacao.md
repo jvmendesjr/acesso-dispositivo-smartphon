@@ -466,3 +466,84 @@ está no final, separado, para não virar promessa.
   por componente (macro executando, mDNS achando a
   porta, watchdog atualizando o endpoint), não por
   recuperação completa de ponta a ponta.
+
+## Atualização 2026-10-30 noite — rede nova e autorização por rede
+
+Achado novo, registrado sem nome de rede, sem endereço
+de rede e sem endpoint vivo (esses ficam só no celular,
+em `~/adb-endpoint.txt` / `~/adb-status.txt`).
+
+### O que aconteceu
+
+- O celular ficou fora de área por algum tempo, sem
+  internet, e voltou numa rede Wi-Fi nova, que ele
+  nunca tinha usado com o ADB. O IP do Tailscale não
+  mudou, o IP do Wi-Fi mudou (mesma faixa), o SSH via
+  Tailscale voltou a funcionar e os watchdogs do Termux
+  continuaram rodando e registrando.
+- O ADB ficou fora por horas: último FOUND no início
+  da tarde, depois só NOT-FOUND contínuo no log do
+  watchdog, a cada ~3,5 min, até a noite. Isso é
+  diferente do padrão do dia, em que as falhas duravam
+  minutos e a porta seguinte era logo redescoberta.
+- Ao abrir o celular, o dono viu o diálogo do Android
+  "Permitir a depuração por Wi-Fi nesta rede?", com
+  a opção "Sempre permitir nesta rede". Enquanto esse
+  diálogo fica sem resposta, o serviço de ADB não
+  aparece no mDNS e o ADB fica fora — é por isso que
+  o watchdog só registrava NOT-FOUND.
+
+### O que NÃO explica a repetição
+
+- Hipótese inicial, retirada: que o diálogo repetia
+  porque a caixinha "Sempre permitir" estava
+  desmarcada. O dono confirmou que marcou "sempre
+  permitir" desde a primeira solicitação, e o diálogo
+  mesmo assim apareceu de novo, com a caixinha
+  desmarcada na nova instância do diálogo.
+- Ou seja: nesta rede nova, marcar "sempre permitir"
+  não impediu, neste caso, um novo pedido no ciclo
+  seguinte. O motivo interno do Android para isso
+  ainda não está estabelecido — hipóteses, não
+  conclusões: a autorização pode ser limpa quando
+  a depuração é desligada e ligada de novo pela
+  ação do MacroDroid, ou a autorização por rede pode
+  valer só enquanto a depuração fica ligada. Não
+  afirmar nenhuma delas como causa até observar
+  mais ciclos.
+
+### Recuperação na noite de 2026-10-30
+
+- Após a permissão mais recente do dono, a
+  descoberta manual via mDNS achou uma porta nova,
+  e a conexão via Tailscale para o endpoint
+  registrado conectou como `device`, com
+  `adb_wifi_enabled=1`. O watchdog confirmou a
+  mesma porta nos dois ciclos seguintes, e o ADB
+  continuava conectado na verificação posterior.
+- Isso prova que a autorização por rede era
+  necessária, mas não prova estabilidade nesta
+  rede nova: o próximo ciclo do MacroDroid (15 min)
+  pode pedir de novo, e o ADB pode cair de novo
+  até o dono responder. Observar o log nos
+  próximos ciclos antes de chamar a recuperação
+  nesta rede de estável.
+
+### Regra para rede nova
+
+- Numa rede Wi-Fi nova, a recuperação automática
+  pode parar no diálogo de autorização e precisar
+  do dono na tela, mesmo com a macro e o watchdog
+  funcionando. Na rede de casa esse diálogo não
+  apareceu, porque a rede já estava autorizada.
+- Por isso, ao trocar de rede, o primeiro passo
+  não é reiniciar watchdog nem varrer porta: é
+  abrir o celular, responder o diálogo de
+  autorização da rede (com "sempre permitir"
+  marcado) e só depois deixar o watchdog
+  redescobrir a porta e reconectar.
+- Nunca registrar nome de rede (SSID), endereço
+  de rede (BSSID) ou endpoint vivo neste
+  repositório. O que vale para o próximo agente
+  é: rede nova = verificar autorização na tela
+  antes de concluir que o bot falhou.
