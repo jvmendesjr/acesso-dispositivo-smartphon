@@ -57,3 +57,67 @@ pareado e conectado, captura de tela legível pelo agente e input
 - `scripts/termux/boot-sshd.sh` — script de boot do Termux:Boot.
 - `scripts/termux/ensure-sshd.sh` — watchdog do sshd (60 s).
 - `scripts/termux/bashrc` — auto-start ao abrir o Termux.
+
+## Atualização 2026-10-29 — instância Manu
+
+Esta seção não remove o registro do agente construtor. Ela acrescenta
+uma segunda instância de acesso, verificada em paralelo, em 2026-10-29.
+
+- Tailscale: a VM do Manu está conectada à mesma tailnet como
+  `muse`, e `s10-lite-de-tutti` aparece na lista dela.
+- GitHub: Muse está conectado e autenticado como `jvmendesjr`.
+  O nome correto do repositório é `acesso-dispositivo-smartphon`
+  (sem o "e" final); a grafia com "e" final não foi encontrada.
+  A renomeação para a grafia com "e" final foi adiada pelo dono.
+- SSH: chave ed25519 dedicada gerada para esta instância, com
+  comentário `muse-s10-lite`. Somente a chave pública foi entregue
+  ao dono, para acrescentar ao `authorized_keys` do Termux, sem
+  sobrescrever chaves existentes. A chave privada fica somente no
+  ambiente do Manu e nunca é commitada aqui.
+  Verificação: SSH via túnel Tailscale para a porta 8022 funcionou,
+  retornando o usuário Termux e um processo `sshd` em execução.
+- ADB: `adb devices` no Termux já listava o próprio celular como
+  `device`, sem necessidade de novo pareamento naquela verificação.
+  A porta do ADB sem fio é efêmera e não deve ser fixada.
+- Apps verificados/instalados em 2026-10-29: o app do Facebook
+  (`com.facebook.katana`) já estava presente; o Messenger
+  (`com.facebook.orca`) foi instalado pela Google Play Store e
+  confirmado por `pm list packages` e pela página da Play Store
+  mostrando Abrir/Desinstalar. O app não foi aberto nem logado
+  nessa instalação.
+- Condições normais: em condições normais (celular ligado e
+  carregado, com internet e Tailscale conectada, Termux vivo com
+  `sshd` no ar), o acesso deve funcionar sempre que preciso.
+  Isso não é uma garantia absoluta: celular desligado ou sem
+  bateria, sem internet, Tailscale revogada, Termux morto por
+  pressão de memória ou reboot podem interromper o acesso.
+
+### Tela: desbloqueada não é acordada
+
+- Problema observado: a tela estava desbloqueada, mas entrava em
+  Dozing após 30 segundos de inatividade. Nesse estado, a captura
+  de tela voltava preta, o que não significa perda de informação
+  nem perda de ADB/SSH — apenas que a tela estava apagada.
+- Regra adotada: antes de qualquer passo de interface, verificar
+  se a tela está acordada, acordá-la quando preciso, confirmar
+  que ficou Awake e só então tocar ou capturar. Se a captura
+  voltar preta, acordar de novo e recapturar, sem encadear
+  toques no escuro.
+- Ajuste aplicado em 2026-10-29, a pedido do dono: o tempo de
+  tela foi alterado de 30 segundos para 5 minutos
+  (`screen_off_timeout` de 30000 para 300000). Isso reduz a
+  frequência com que a tela apaga no meio de uma tarefa, mas
+  não elimina a regra de acordar sempre: após 5 minutos sem
+  uso, a tela ainda pode apagar.
+- Durante uma sessão de interface, enquanto o celular estiver
+  carregando, a tela pode ser mantida acesa temporariamente e
+  restaurada ao comportamento normal no final da sessão.
+
+### Ações visíveis x ações de fundo
+
+- Ações de fundo, sem mudar a tela: consultas via SSH/Termux,
+  como listar pacotes, verificar `sshd` ou tirar uma captura.
+- Ações visíveis na tela: toques, teclas e abertura de apps via
+  ADB são toques reais no sistema. Quem estiver olhando para o
+  celular vê a Play Store abrir, o botão Instalar ser tocado e
+  a página mudar para Abrir/Desinstalar, por exemplo.
