@@ -398,11 +398,20 @@ está no final, separado, para não virar promessa.
   pega a porta, detecta o IP do Tailscale via ifaddr
   (não fixado no script) e o IP Wi-Fi do anúncio mDNS.
 - Teste, 2026-10-30 ~11:12 -03, com ADB online:
-  achou `adb-RX8N70GY0ZB-QdWXwb._adb-tls-connect._tcp.local.`
-  porta 41735, Wi-Fi 192.168.0.8, Tailscale 100.87.79.94 —
-  porta exatamente igual ao endpoint atual via Tailscale.
+  achou o serviço `_adb-tls-connect._tcp.local.` do
+  aparelho, com a porta exatamente igual à porta do
+  endpoint via Tailscale na hora do teste.
   Ou seja: a porta do mDNS é a porta do ADB, qualquer que
-  seja a interface de conexão.
+  seja a interface de conexão. Nome da instância, IP e
+  porta do teste NÃO são registrados aqui: o endpoint
+  vivo fica só em `~/adb-endpoint.txt` no celular, e
+  a porta é efêmera.
+- Dependências do script, para reinstalar no Termux:
+  `pkg install python` e `pip install zeroconf`
+  (o zeroconf traz o ifaddr). O script de teste
+  `~/adb-mdns-test.py` NÃO está neste repositório;
+  o script instalado e versionado é só
+  `scripts/adb-discover.py`.
 - Saídas: `~/adb-endpoint.txt` (IP Tailscale:porta) e
   `~/adb-status.txt` (data, serviço, porta, Wi-Fi,
   Tailscale, endpoint, fonte=mdns). Log em
@@ -420,7 +429,7 @@ está no final, separado, para não virar promessa.
 - Boot: `~/.termux/boot/boot-adb.sh` inicia o watchdog
   no boot, sem tocar em `boot-sshd.sh`.
 - Verificação, 2026-10-30 ~11:21 -03: log do watchdog
-  com FOUND 100.87.79.94:41735, endpoint e status
+  com FOUND do endpoint via Tailscale, endpoint e status
   atualizados, `adb devices` = device, adb_wifi_enabled=1.
 - Whitelist de Doze, confirmada via dumpsys: com.termux,
   com.termux.boot, com.arlosoft.macrodroid e
@@ -431,7 +440,7 @@ está no final, separado, para não virar promessa.
 - Requisito, 2026-10-30 ~10:59 -03: se o endereço mudar,
   a automação tem que garantir que a Muse receba isso.
 - Na prática, o IP do Tailscale tem ficado estável
-  (100.87.79.94) e o que muda é a porta. O watchdog
+  e o que muda é a porta. O watchdog
   descobre a porta via mDNS e escreve o endpoint novo
   em `~/adb-endpoint.txt`, que a VM lê via SSH — SSH
   funciona mesmo com o ADB caído, porque depende só

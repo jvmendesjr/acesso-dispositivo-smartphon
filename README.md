@@ -170,7 +170,9 @@ Verificado em 2026-10-30, sem toques na tela durante a checagem:
 ## Atualização 2026-10-30 — recuperação instalada
 
 Verificado em 2026-10-30, com o ADB online no endpoint
-100.87.79.94:41735 (porta efêmera, não fixar):
+atual via Tailscale (porta efêmera, não fixar, e não
+registrada neste repositório — o endpoint vivo fica
+só em `~/adb-endpoint.txt` no celular):
 
 - MacroDroid, macro `LigarDepuracaoWifi`, ligada, com
   gatilhos Intervalo regular 00:15:00 e Dispositivo
@@ -180,8 +182,11 @@ Verificado em 2026-10-30, com o ADB online no endpoint
   "Há 8 minutos" na lista do MacroDroid).
 - Descoberta da porta via mDNS provada: Python 3.14.8 e
   zeroconf 0.151.5 no Termux, script `adb-discover.py`
-  achando porta 41735 via `_adb-tls-connect._tcp`,
-  igual ao endpoint via Tailscale, com Wi-Fi 192.168.0.8.
+  achando, via `_adb-tls-connect._tcp`, a mesma porta
+  do endpoint via Tailscale na hora do teste.
+  Dependências no Termux: `pkg install python` e
+  `pip install zeroconf` (o zeroconf traz o ifaddr,
+  usado para detectar o IP do Tailscale).
 - Watchdog `ensure-adb.sh` rodando no celular, loop
   180 s, atualizando `~/adb-endpoint.txt` e
   `~/adb-status.txt`, com boot em `boot-adb.sh` via
