@@ -1,7 +1,8 @@
 # 08 — PC como ponto de execução do ADB
 
 Decidido e provado em 2026-11-01, entre 11:07 e 12:44, pelo
-usuário e pelo agente, sem push para o GitHub nesta atualização.
+usuário e pelo agente. Atualizado localmente em 2026-11-05 e
+publicado no GitHub em 2026-11-05, a pedido do usuário.
 
 ## Decisão
 

@@ -226,8 +226,9 @@ só em `~/adb-endpoint.txt` no celular):
 
 ## Atualização 2026-11-01 — PC como ponto de execução do ADB
 
-Verificado em 2026-11-01, entre 11:07 e 12:44, sem push para o
-GitHub nesta atualização (local apenas):
+Verificado em 2026-11-01, entre 11:07 e 12:44. Atualizado
+localmente em 2026-11-05 e publicado no GitHub em 2026-11-05,
+a pedido do usuário:
 
 - O PC passou a ser o ponto de execução do ADB, decidido pelo
   usuário porque um agente do Paperclip no PC vai assumir essa
