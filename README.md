@@ -30,6 +30,7 @@ pareado e conectado, captura de tela legível pelo agente e input
 | 05 Sistema modular | `docs/05-modular-system.md` | Como plugar as tarefas do laboratório |
 | 06 Conexão estável | `docs/06-conexao-estavel.md` | Caminho estável via proxy, o que falhou e o que prova conexão |
 | 07 Bot de recuperação | `docs/07-bot-recuperacao.md` | Bot instalado 2026-10-30: MacroDroid + mDNS + watchdog |
+| 08 PC como ponto de execução do ADB | `docs/08-pc-adb-ponto-execucao.md` | PC como ponto de execução, pareamento por chave, porta efêmera, Stories publicado via PC em 2026-11-01 |
 | Navegação | `skills/s10-navegacao/SKILL.md` | Loop observar-agir-verificar-registrar e escada de destravamento |
 | Watchdog ADB | `scripts/ensure-adb.sh` | Watchdog do ADB instalado no celular, loop 180 s |
 | Descoberta mDNS | `scripts/adb-discover.py` | Descobre a porta via mDNS, atualiza endpoint e status |
@@ -222,3 +223,31 @@ só em `~/adb-endpoint.txt` no celular):
   bot. Nome de rede, endereço de rede e endpoint
   vivo nunca vão para este repositório. Ver
   `docs/07-bot-recuperacao.md`, seção final.
+
+## Atualização 2026-11-01 — PC como ponto de execução do ADB
+
+Verificado em 2026-11-01, entre 11:07 e 12:44, sem push para o
+GitHub nesta atualização (local apenas):
+
+- O PC passou a ser o ponto de execução do ADB, decidido pelo
+  usuário porque um agente do Paperclip no PC vai assumir essa
+  tarefa no futuro. Platform-tools oficial instalado isolado
+  em `~/platform-tools` no PC, sem apt e sem mexer no sistema:
+  adb 1.0.41 / 37.0.1.
+- Pareamento é por chave de cada máquina: a chave nova do PC
+  precisou de pareamento próprio, com código na tela do S10 e
+  porta de pareamento descoberta por mDNS. Depois disso, a
+  conexão na porta principal da tela funcionou como `device`,
+  modelo SM-G770F confirmado.
+- A porta principal mudou de novo logo após o pareamento; o
+  endpoint no telefone foi atualizado por mDNS e o PC
+  reconectou na porta nova. Endpoint vivo, código de
+  pareamento e portas nunca são registrados neste repositório.
+- Stories 9:16 do piloto publicado via ADB do PC em
+  2026-11-01 ~12:43-12:44, após aprovação do usuário às
+  12:37, com rótulo de IA ligado, Público, WhatsApp
+  desativado, e confirmação no Feed como "Seu story".
+  Correção ao estado de 2026-10-30 acima: publicar pelo ADB
+  agora está provado (Feed e Stories); responder a
+  interessado segue não provado. Ver
+  `docs/08-pc-adb-ponto-execucao.md`.
